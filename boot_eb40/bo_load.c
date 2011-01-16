@@ -32,15 +32,14 @@
 /* Hardware description */
 #define NB_USART            2
 #define PIO_IRQ0    (9)
-//#define SSRAM_ADDR  (0x02000000)
 #define BUFFER_SIZE (0xFFFF)
 
 extern u_int init_usart ( u_int usart_id, u_int mode, u_int speed, u_int timeguard ) ;
 extern u_int disable_usart ( u_int usart_id ) ;
-extern u_int receive_frame ( u_int usart_id, char *pt_buffer, u_int max_size, u_int timeout ) ;
-extern u_int is_receive0_done (void); extern u_int next_frame0 (void);
+extern u_int receive_frame ( u_int usart_id, void *pt_buffer, u_int max_size, u_int timeout ) ;
+extern u_int is_receive0_done (void); extern void next_frame0 (void);
 
-extern u_int sram_addr;
+extern char sram_addr[];
 //*----------------------------------------------------------------------------
 //* Function Name       : BootLoad
 //* Object              : Main function of the bootloader
@@ -48,45 +47,29 @@ extern u_int sram_addr;
 //* Output Parameters   : none
 //* Functions called    : init_usart, disable_usart, receive_frame
 //*----------------------------------------------------------------------------
-int BootLoad ( void )
+void BootLoad ( void )
 //* Begin
 {
-    u_int       usart_id = 0;
-
-    //* For each USART
-//    for (usart_id = 0  ;  usart_id < NB_USART  ;  usart_id ++)
-//    {
         //* Initialize USART
-        init_usart (0/*usart_id*/, US_ASYNC_MODE, (usart_id == 0 ? 18 : 53), 0);
+        init_usart (0, US_ASYNC_MODE, 18, 0);
         //* Initialize PDC Reception
-        receive_frame (0/*usart_id*/, ((char *)sram_addr/*SSRAM_ADDR*/), BUFFER_SIZE, 100 );
-    //* EndFor
-//    }
+        receive_frame (0, sram_addr, BUFFER_SIZE, 100 );
+
 	while (1)
 	{
 		
 		switch (is_receive0_done())
 		{
-			case 1:
-				if (next_frame0()) PIO_BASE->PIO_SODR = LED1;
-				else PIO_BASE->PIO_CODR = LED1;
-				continue;
+			case 1: next_frame0(); continue;
 
 			case 2:	PIO_BASE->PIO_CODR = LED1; goto wait_user;
 		}
 	}
 wait_user:
-    //* Wait for IRQ0 pin asserted
-    while (!(PIO_BASE->PIO_PDSR & SW5));
+	//* Wait for IRQ0 pin asserted
+	while (!(PIO_BASE->PIO_PDSR & SW5));
 
-    //* For each USART
-//    for (usart_id = 0  ;  usart_id < NB_USART  ;  usart_id ++)
-//    {
-        //* Disable USART
-        disable_usart (0/*usart_id*/);
-    //* EndFor
-//    }
-
-    return(sram_addr/*SSRAM_ADDR*/);
+	//* Disable USART
+	disable_usart (0/*usart_id*/);
 //* End
 }

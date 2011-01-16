@@ -101,7 +101,7 @@ u_int disable_usart ( u_int usart_id )
 //* Output Parameters   : True if <usart_id> is correct
 //* Functions called    : none
 //*----------------------------------------------------------------------------
-u_int receive_frame ( u_int usart_id, char *pt_buffer, u_int max_size, u_int timeout )
+u_int receive_frame ( u_int usart_id, void *pt_buffer, u_int max_size, u_int timeout )
 //* Begin
 {
     StructUSART *ad_usart;
@@ -113,20 +113,20 @@ u_int receive_frame ( u_int usart_id, char *pt_buffer, u_int max_size, u_int tim
     //* Restart the timeout logic
     ad_usart->US_CR = US_STTTO ;
     //* Store the address of the buffer
-    ad_usart->US_RPR = 0x02000000;	//(u_int) pt_buffer ;
+    ad_usart->US_RPR = (u_int)pt_buffer;
     //* Store the number of bytes to transmit
-    ad_usart->US_RCR = 0xFFFF;	//max_size ;
+    ad_usart->US_RCR = max_size ;
     //* Return true
     return ( TRUE ) ;
 }
 
-u_int next_frame0 (void)
+void next_frame0 (void)
 {
 //	ad_usart = USART0_BASE;
 	((StructUSART*)USART0_BASE)->US_CR = US_STTTO;
 	((StructUSART*)USART0_BASE)->US_RCR = 0xFFFF;
-	if (((StructUSART*)USART0_BASE)->US_RPR & 1) return (TRUE);
-	else return (FALSE);
+//	if (((StructUSART*)USART0_BASE)->US_RPR & 1) return (TRUE);
+//	else return (FALSE);
 }
 #define END_RX	1
 #define RX_TMO	2

@@ -24,7 +24,7 @@
 #define asmlinkage
 //#define ADDR_ANGEL      0x01002000
 
-extern int BootLoad ( void ) ;
+extern void BootLoad ( void ) ;
 extern void BootFts (void ) ;
 extern int BootFlash ( void ) ;
 
@@ -55,9 +55,9 @@ u_int bo_start(void)
         {
             //* Expect SW3 un-pressed
             PIO_BASE->PIO_SODR = LED1;
-            BootLoad(); PIO_BASE->PIO_SODR = LED3;
+            BootLoad();
+	    PIO_BASE->PIO_SODR = LED3;
 	    sram_addr();
-//	    __asm__ __volatile__ ("b sram_addr");
         }//* EndIf
 
         //* If SW3 button pressed, Functional Test Software
