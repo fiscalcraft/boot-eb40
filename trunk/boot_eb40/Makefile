@@ -8,6 +8,7 @@ CFLAGS := -g -c -I../include -Wall -O2 -mcpu=arm7tdmi
 
 all: $(OBJS)
 	$(LD) -g -T AT91R40807.ld $(OBJS) -o boot_eb40
+	arm-elf-objcopy -O srec boot_eb40 boot_eb40.srec
 #	arm-elf-nm boot_eb40 | grep -v '\(compiled\)\|\(\.o$\)\|\( a \)' | sort > boot_eb40.map
 
 
@@ -28,5 +29,5 @@ bo_reset.o:	bo_reset.S
 		$(CC)  $(CFLAGS) bo_reset.S -o $@
 
 clean:
-		rm ./*.o ./*.map ./boot_eb40
+		rm ./*.o ./*.srec ./boot_eb40
 
