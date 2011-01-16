@@ -1,13 +1,10 @@
 CC = arm-elf-gcc
-#AS = arm-elf-as
 LD = arm-elf-ld
 NM = arm-elf-nm
 
 OBJS =  bo_reset.o bo_entry.o bo_fts.o bo_load.o bo_usart.o  
 
-WORKDIR = /home/mebius/AT91EB40/software/
-
-CFLAGS := -g -c -I$(WORKDIR)/include -Wall -O2 -mcpu=arm7tdmi
+CFLAGS := -g -c -I../include -Wall -O2 -mcpu=arm7tdmi
 
 all: $(OBJS)
 	$(LD) -g -T AT91R40807.ld $(OBJS) -o boot_eb40
